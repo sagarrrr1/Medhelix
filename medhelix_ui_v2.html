@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MedHelix</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Inter+Tight:wght@500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f7;
+  --surface:rgba(255,255,255,.78);
+  --surface-solid:#fff;
+  --border:rgba(0,0,0,.08);
+  --border-mid:rgba(0,0,0,.13);
+  --text-1:#1d1d1f;
+  --text-2:#6e6e73;
+  --text-3:#a1a1a6;
+  --accent:#0071e3;
+  --accent-h:#0077ed;
+  --accent-bg:rgba(0,113,227,.07);
+  --accent-bg-h:rgba(0,113,227,.13);
+  --ok:#1a9e3f;
+  --ok-bg:rgba(26,158,63,.07);
+  --warn:#c07a00;
+  --warn-bg:rgba(192,122,0,.07);
+  --danger:#d93025;
+  --danger-bg:rgba(217,48,37,.07);
+  --info:#0066cc;
+  --info-bg:rgba(0,102,204,.07);
+  --rad-sm:8px;
+  --rad:14px;
+  --rad-lg:20px;
+  --blur:blur(20px) saturate(180%);
+  --sh-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);
+  --sh-lg:0 10px 36px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.05);
+  --nav:60px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-tight:'Inter Tight',var(--font);
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);background:var(--bg);color:var(--text-1);min-height:100vh;font-size:15px;line-height:1.55}
+
+/* ── PAGES ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav);background:rgba(245,245,247,.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:200}
+.nav-brand{display:flex;align-items:center;gap:9px;font-family:var(--font-tight);font-size:17px;font-weight:600;color:var(--text-1);letter-spacing:-.3px}
+.nav-icon{width:30px;height:30px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px}
+.nav-tabs{display:flex;gap:2px;background:rgba(0,0,0,.05);border-radius:10px;padding:3px}
+.nav-tab{padding:5px 16px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:400;color:var(--text-2);border:none;background:transparent;transition:all .15s;font-family:var(--font);white-space:nowrap}
+.nav-tab:hover{color:var(--text-1)}
+.nav-tab.active{background:var(--surface-solid);color:var(--text-1);box-shadow:var(--sh-sm);font-weight:500}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-user{font-size:12px;color:var(--text-2);background:rgba(0,0,0,.04);border:.5px solid var(--border);border-radius:20px;padding:4px 11px;cursor:pointer;transition:background .15s}
+.nav-user:hover{background:rgba(0,0,0,.07)}
+.nav-signout{font-size:12px;color:var(--danger);background:var(--danger-bg);border:.5px solid rgba(217,48,37,.15);border-radius:20px;padding:4px 11px;cursor:pointer;transition:background .15s}
+.nav-signout:hover{background:rgba(217,48,37,.13)}
+
+/* ── LAYOUT ── */
+main{max-width:860px;margin:0 auto;padding:calc(var(--nav) + 36px) 24px 72px}
+.app-content{animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO ── */
+.hero{margin-bottom:32px}
+.hero-eyebrow{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.hero h1{font-family:var(--font-tight);font-size:32px;font-weight:600;letter-spacing:-.6px;line-height:1.15;color:var(--text-1);margin-bottom:8px}
+.hero h1 span{font-weight:300}
+.hero p{font-size:15px;color:var(--text-2);font-weight:300}
+
+/* ── DISCLAIMER ── */
+.disclaimer{background:rgba(0,0,0,.03);border:.5px solid var(--border);border-radius:var(--rad-sm);padding:11px 16px;font-size:12px;color:var(--text-3);line-height:1.5;margin-bottom:24px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:.5px solid var(--border);border-radius:var(--rad-lg);padding:24px 26px;box-shadow:var(--sh);margin-bottom:16px;transition:box-shadow .2s}
+.card:hover{box-shadow:var(--sh-lg)}
+.card-label{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px}
+
+/* ── FORM ── */
+.field{margin-bottom:16px}
+.field-label{display:block;font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:6px}
+.field-row{display:flex;gap:14px;flex-wrap:wrap}
+.field-row .field{flex:1;min-width:140px}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;font-family:var(--font);font-size:15px;color:var(--text-1);background:rgba(255,255,255,.65);border:.5px solid var(--border-mid);border-radius:var(--rad-sm);padding:10px 14px;outline:none;transition:border-color .15s,box-shadow .15s,background .15s;-webkit-appearance:none;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a1a1a6' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);background:rgba(255,255,255,.92)}
+textarea{resize:vertical;min-height:96px;line-height:1.55}
+
+/* ── SEARCH BOX (autocomplete) ── */
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-3);pointer-events:none;font-size:15px}
+.search-input{padding-left:38px !important}
+.autocomplete-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface-solid);border:.5px solid var(--border-mid);border-radius:var(--rad-sm);box-shadow:var(--sh-lg);z-index:300;max-height:240px;overflow-y:auto;display:none}
+.autocomplete-list.show{display:block}
+.ac-item{padding:10px 14px;font-size:14px;cursor:pointer;color:var(--text-1);transition:background .12s;border-bottom:.5px solid var(--border)}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover,.ac-item.focused{background:var(--accent-bg)}
+.ac-item em{color:var(--accent);font-style:normal;font-weight:500}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;font-family:var(--font);font-size:14px;font-weight:500;border-radius:var(--rad-sm);border:none;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 1px 3px rgba(0,113,227,.3)}
+.btn-primary:hover{background:var(--accent-h);box-shadow:0 2px 8px rgba(0,113,227,.4);transform:translateY(-1px)}
+.btn-primary:active{transform:scale(.98)}
+.btn-secondary{background:rgba(0,0,0,.05);color:var(--text-1);border:.5px solid var(--border-mid)}
+.btn-secondary:hover{background:rgba(0,0,0,.08)}
+.btn-ghost{background:transparent;color:var(--accent);padding:8px 0;font-size:13px}
+.btn-ghost:hover{color:var(--accent-h)}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border:.5px solid rgba(217,48,37,.2)}
+.btn-danger:hover{background:rgba(217,48,37,.13)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ── DRUG META GRID ── */
+.drug-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.drug-meta-item{background:var(--surface-solid);border:.5px solid var(--border);border-radius:var(--rad-sm);padding:13px 15px}
+.drug-meta-key{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px}
+.drug-meta-val{font-size:13px;color:var(--text-1);line-height:1.4}
+.drug-meta-val.mono{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:500}
+.category-badge{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;background:var(--accent-bg);color:var(--accent);border:.5px solid var(--accent-bg-h);margin-bottom:14px}
+
+/* ── ALERTS ── */
+.alert{border-radius:var(--rad-sm);padding:13px 16px;font-size:14px;line-height:1.5;margin-bottom:10px;border:.5px solid;animation:fadeUp .2s ease}
+.alert-ok{background:var(--ok-bg);border-color:rgba(26,158,63,.2);color:#0f5a23}
+.alert-warning{background:var(--warn-bg);border-color:rgba(192,122,0,.22);color:#7a4e00}
+.alert-danger{background:var(--danger-bg);border-color:rgba(217,48,37,.2);color:#8b1612}
+.alert-info{background:var(--info-bg);border-color:rgba(0,102,204,.2);color:#004080}
+.alert strong{font-weight:500}
+
+/* ── AI OUTPUT ── */
+.ai-box{background:var(--accent-bg);border:.5px solid var(--accent-bg-h);border-radius:var(--rad);padding:18px 20px;margin-top:16px}
+.ai-box-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.ai-text{font-size:14px;line-height:1.7;color:var(--text-1);white-space:pre-wrap}
+
+/* ── INTERACTION CHIPS ── */
+.med-chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.med-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--accent-bg);color:var(--accent);border:.5px solid var(--accent-bg-h);border-radius:20px;font-size:13px;font-weight:500}
+.med-chip-remove{cursor:pointer;color:var(--accent);opacity:.6;font-size:16px;line-height:1;transition:opacity .12s}
+.med-chip-remove:hover{opacity:1}
+.int-count{font-size:12px;color:var(--text-3);margin-top:4px}
+
+/* ── SUMMARY METRICS ── */
+.metric-row{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
+.metric-box{flex:1;min-width:100px;background:var(--surface-solid);border:.5px solid var(--border);border-radius:var(--rad-sm);padding:13px 16px;text-align:center}
+.metric-num{font-family:var(--font-tight);font-size:24px;font-weight:600;letter-spacing:-.5px}
+.metric-label{font-size:11px;color:var(--text-3);margin-top:2px}
+.metric-box.danger .metric-num{color:var(--danger)}
+.metric-box.warning .metric-num{color:var(--warn)}
+.metric-box.ok .metric-num{color:var(--ok)}
+
+/* ── HISTORY ── */
+.history-item{border-top:.5px solid var(--border);padding:14px 0}
+.history-item:first-child{border-top:none;padding-top:0}
+.history-meta{font-size:11px;color:var(--text-3);margin-bottom:4px}
+.history-symptoms{font-size:14px;color:var(--text-2);font-style:italic;margin-bottom:7px}
+.history-advice{font-size:14px;color:var(--text-1);line-height:1.6;white-space:pre-wrap}
+.history-toggle{background:none;border:none;font-size:13px;color:var(--accent);cursor:pointer;font-family:var(--font);padding:0;margin-top:8px;display:block}
+
+/* ── CHAR COUNT ── */
+.char-count{font-size:12px;color:var(--text-3);text-align:right;margin-top:4px}
+.char-count.near{color:var(--warn)}
+
+/* ── DIVIDER ── */
+.divider{height:.5px;background:var(--border);margin:20px 0}
+
+/* ── LOADING ── */
+.spinner-row{display:none;align-items:center;gap:10px;font-size:14px;color:var(--text-2);padding:14px 0}
+.spinner-row.show{display:flex}
+.spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:28px 24px 20px;font-size:12px;color:var(--text-3);line-height:1.8;border-top:.5px solid var(--border);max-width:860px;margin:0 auto}
+.footer-sagar{font-size:13px;font-weight:500;color:var(--text-2);margin-top:6px;letter-spacing:-.1px}
+
+/* ── PROFILE PAGE ── */
+.profile-section-title{font-size:13px;font-weight:500;color:var(--text-2);margin:20px 0 12px}
+.multiselect-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.ms-chip{padding:6px 12px;border-radius:20px;border:.5px solid var(--border-mid);background:rgba(255,255,255,.5);font-size:13px;color:var(--text-2);cursor:pointer;transition:all .12s;user-select:none}
+.ms-chip:hover{background:rgba(255,255,255,.9);color:var(--text-1)}
+.ms-chip.on{background:var(--accent-bg);color:var(--accent);border-color:rgba(0,113,227,.25);font-weight:500}
+.profile-saved{display:none;background:var(--ok-bg);border:.5px solid rgba(26,158,63,.2);border-radius:var(--rad-sm);padding:12px 16px;font-size:14px;color:#0f5a23;margin-top:14px;animation:fadeUp .2s ease}
+
+/* ── LOGIN PAGE ── */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#f0f4ff 0%,#f5f5f7 50%,#fff 100%);padding:24px}
+.login-card{background:var(--surface-solid);border:.5px solid var(--border);border-radius:var(--rad-lg);padding:40px 36px 36px;max-width:420px;width:100%;box-shadow:var(--sh-lg)}
+.login-logo{width:52px;height:52px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:24px}
+.login-card h1{font-family:var(--font-tight);font-size:26px;font-weight:600;letter-spacing:-.4px;margin-bottom:6px}
+.login-card .sub{font-size:14px;color:var(--text-2);margin-bottom:28px;line-height:1.5}
+.login-tabs{display:flex;gap:2px;background:rgba(0,0,0,.05);border-radius:9px;padding:3px;margin-bottom:20px}
+.login-tab{flex:1;text-align:center;padding:6px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:400;color:var(--text-2);border:none;background:transparent;font-family:var(--font);transition:all .15s}
+.login-tab.active{background:var(--surface-solid);color:var(--text-1);box-shadow:var(--sh-sm);font-weight:500}
+.login-disclaimer{font-size:12px;color:var(--text-3);text-align:center;margin-top:20px;line-height:1.5}
+.field-error{font-size:12px;color:var(--danger);margin-top:4px;display:none}
+.field-error.show{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  nav{padding:0 16px}
+  .nav-tabs{gap:0}
+  .nav-tab{padding:5px 10px;font-size:12px}
+  main{padding:calc(var(--nav) + 18px) 16px 56px}
+  .hero h1{font-size:24px}
+  .card{padding:18px 18px;border-radius:var(--rad)}
+  .login-card{padding:28px 22px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     LOGIN PAGE
+═══════════════════════════════════════════════════════════════ -->
+<div id="login-page" class="page active">
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-logo">💊</div>
+      <h1>MedHelix</h1>
+      <p class="sub">Your personal medicine safety assistant.<br>Sign in to get started.</p>
+
+      <div class="login-tabs">
+        <button class="login-tab active" onclick="switchLoginTab('email',this)">Email</button>
+        <button class="login-tab" onclick="switchLoginTab('phone',this)">Phone</button>
+      </div>
+
+      <div id="login-email-field" class="field">
+        <label class="field-label">Email address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <div class="field-error" id="login-email-err">Please enter a valid email address.</div>
+      </div>
+
+      <div id="login-phone-field" class="field" style="display:none">
+        <label class="field-label">Phone number</label>
+        <input type="tel" id="login-phone" placeholder="+91 9876543210" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <div class="field-error" id="login-phone-err">Please enter a valid phone number (min 8 digits).</div>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Continue →</button>
+
+      <p class="login-disclaimer">⚕️ MedHelix is for informational purposes only.<br>Not a substitute for professional medical advice.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     USER PROFILE SETUP PAGE (shown after first login)
+═══════════════════════════════════════════════════════════════ -->
+<div id="profile-setup-page" class="page">
+  <div class="login-page" style="align-items:flex-start;padding-top:48px;padding-bottom:48px">
+    <div style="max-width:560px;width:100%;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px">
+        <div class="login-logo" style="margin-bottom:0;width:44px;height:44px;font-size:20px">💊</div>
+        <div>
+          <div style="font-family:var(--font-tight);font-size:18px;font-weight:600">One more step</div>
+          <div style="font-size:13px;color:var(--text-2)">Tell us about your health so we can personalise safety advice</div>
+        </div>
+      </div>
+
+      <div class="card" style="border-radius:var(--rad-lg);padding:28px">
+        <div class="card-label">Basic info</div>
+        <div class="field-row">
+          <div class="field"><label class="field-label">Full Name</label><input type="text" id="p-name" placeholder="Your name"/></div>
+          <div class="field" style="max-width:110px"><label class="field-label">Age</label><input type="number" id="p-age" value="30" min="1" max="120" style="width:100%"/></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="field-label">Gender</label>
+            <select id="p-gender"><option>Male</option><option>Female</option><option>Other</option></select>
+          </div>
+          <div class="field"><label class="field-label">Blood Group</label>
+            <select id="p-blood"><option>Unknown</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="card-label">Chronic conditions</div>
+        <div class="multiselect-wrap" id="ms-conditions">
+          <span class="ms-chip" data-v="Diabetes (Type 2)">Diabetes (Type 2)</span>
+          <span class="ms-chip" data-v="Diabetes (Type 1)">Diabetes (Type 1)</span>
+          <span class="ms-chip" data-v="Hypertension">Hypertension</span>
+          <span class="ms-chip" data-v="Asthma">Asthma</span>
+          <span class="ms-chip" data-v="COPD">COPD</span>
+          <span class="ms-chip" data-v="Kidney Disease">Kidney Disease</span>
+          <span class="ms-chip" data-v="Liver Disease">Liver Disease</span>
+          <span class="ms-chip" data-v="Heart Disease">Heart Disease</span>
+          <span class="ms-chip" data-v="Heart Failure">Heart Failure</span>
+          <span class="ms-chip" data-v="Thyroid Disorder">Thyroid Disorder</span>
+          <span class="ms-chip" data-v="Epilepsy">Epilepsy</span>
+          <span class="ms-chip" data-v="Stroke History">Stroke History</span>
+          <span class="ms-chip" data-v="Depression / Anxiety">Depression / Anxiety</span>
+          <span class="ms-chip" data-v="Gout">Gout</span>
+          <span class="ms-chip" data-v="Psoriasis">Psoriasis</span>
+          <span class="ms-chip" data-v="Rheumatoid Arthritis">Rheumatoid Arthritis</span>
+          <span class="ms-chip" data-v="GERD">GERD</span>
+          <span class="ms-chip" data-v="Cancer">Cancer</span>
+          <span class="ms-chip" data-v="Anaemia">Anaemia</span>
+        </div>
+
+        <div class="divider"></div>
+        <div class="card-label">Known drug allergies</div>
+        <div class="multiselect-wrap" id="ms-allergies">
+          <span class="ms-chip" data-v="Penicillin">Penicillin</span>
+          <span class="ms-chip" data-v="Aspirin / NSAIDs">Aspirin / NSAIDs</span>
+          <span class="ms-chip" data-v="Sulfa Drugs">Sulfa Drugs</span>
+          <span class="ms-chip" data-v="Codeine / Opioids">Codeine / Opioids</span>
+          <span class="ms-chip" data-v="Tetracycline">Tetracycline</span>
+          <span class="ms-chip" data-v="Erythromycin">Erythromycin</span>
+          <span class="ms-chip" data-v="Cephalosporins">Cephalosporins</span>
+          <span class="ms-chip" data-v="ACE Inhibitors">ACE Inhibitors</span>
+          <span class="ms-chip" data-v="Statins">Statins</span>
+          <span class="ms-chip" data-v="Iodine / Contrast dye">Iodine / Contrast dye</span>
+        </div>
+
+        <div class="divider"></div>
+        <div class="field"><label class="field-label">Past surgeries / procedures</label>
+          <textarea id="p-surgeries" placeholder="e.g. Appendectomy (2018), Bypass surgery (2020)..."></textarea>
+        </div>
+        <div class="field"><label class="field-label">Genetic / hereditary conditions</label>
+          <textarea id="p-genetic" placeholder="e.g. G6PD deficiency, Sickle cell trait, Thalassemia..."></textarea>
+        </div>
+        <div class="field"><label class="field-label">Accidents / injuries with lasting effects</label>
+          <textarea id="p-accidents" placeholder="e.g. Kidney damage from road accident (2019)..."></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Currently taking medicines</label>
+          <div class="search-wrap" style="margin-bottom:8px">
+            <span class="search-icon">🔍</span>
+            <input class="search-input" type="text" id="curmed-search" placeholder="Search and add medicines..." oninput="acCurMed(this.value)" onkeydown="acKeydown(event,'curmed-list')"/>
+            <div class="autocomplete-list" id="curmed-list"></div>
+          </div>
+          <div class="med-chips" id="curmed-chips"></div>
+        </div>
+        <div class="field"><label class="field-label">Other medicines (not in list)</label>
+          <input type="text" id="p-othermeds" placeholder="e.g. Insulin glargine, Hydroxychloroquine..."/>
+        </div>
+
+        <div class="field-error show" id="p-name-err" style="display:none;margin-bottom:12px">Please enter your name to continue.</div>
+        <button class="btn btn-primary btn-full" onclick="saveProfile()" style="margin-top:8px">Save Profile & Enter App →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════════════════════════════ -->
+<div id="app-page" class="page">
+
+  <nav>
+    <div class="nav-brand">
+      <div class="nav-icon">💊</div>
+      MedHelix
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showTab('medicine',this)">Medicine</button>
+      <button class="nav-tab" onclick="showTab('interactions',this)">Interactions</button>
+      <button class="nav-tab" onclick="showTab('assistant',this)">Health AI</button>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user" id="nav-user-label" onclick="showTab('profile-edit',null)"></span>
+      <span class="nav-signout" onclick="signOut()">Sign out</span>
+    </div>
+  </nav>
+
+  <main>
+    <div class="disclaimer">⚕️ MedHelix is for general informational purposes only. Not a substitute for professional medical advice, diagnosis, or treatment. Always consult a licensed doctor or pharmacist before taking any medication.</div>
+
+    <!-- ── TAB: MEDICINE ANALYZER ── -->
+    <div id="tab-medicine" class="app-content">
+      <div class="hero">
+        <div class="hero-eyebrow">Medicine Analyzer</div>
+        <h1>Look up any <span>medicine</span></h1>
+        <p>Search by name to see uses, dosage, side effects, and get an AI explanation.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Search medicine</div>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" id="ana-search" placeholder="Type 2–3 letters, e.g. met, par, ibu..." oninput="acAna(this.value)" onkeydown="acKeydown(event,'ana-list')"/>
+          <div class="autocomplete-list" id="ana-list"></div>
+        </div>
+      </div>
+
+      <div id="ana-result" style="display:none" class="card">
+        <div id="ana-cat-badge" class="category-badge"></div>
+        <div id="ana-drug-name" style="font-family:var(--font-tight);font-size:20px;font-weight:600;letter-spacing:-.3px;margin-bottom:14px;text-transform:capitalize"></div>
+        <div class="drug-meta" id="ana-drug-meta"></div>
+
+        <div class="divider"></div>
+
+        <div id="ana-personal-section" style="display:none">
+          <div style="font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:10px">🔍 Personalised Safety Check</div>
+          <div id="ana-personal-caption" style="font-size:12px;color:var(--text-3);margin-bottom:12px"></div>
+          <div class="btn-row">
+            <button class="btn btn-primary btn-sm" onclick="runPersonalSafety()">Run Safety Check</button>
+          </div>
+          <div class="spinner-row" id="ana-safety-spin"><div class="spin"></div>Checking against your medical history…</div>
+          <div id="ana-safety-result" style="display:none;margin-top:14px"></div>
+          <div class="divider"></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary btn-sm" onclick="aiAnaExplain()">✦ AI Explanation</button>
+        </div>
+        <div class="spinner-row" id="ana-ai-spin"><div class="spin"></div>Fetching explanation…</div>
+        <div id="ana-ai-out" style="display:none">
+          <div class="ai-box">
+            <div class="ai-box-label"><span class="ai-dot"></span>AI-generated</div>
+            <div class="ai-text" id="ana-ai-text"></div>
+          </div>
+          <p style="font-size:12px;color:var(--text-3);margin-top:8px">Always verify with your doctor or pharmacist.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: DRUG INTERACTION CHECKER ── -->
+    <div id="tab-interactions" class="app-content" style="display:none">
+      <div class="hero">
+        <div class="hero-eyebrow">Drug Interaction Checker</div>
+        <h1>Check medicine <span>combinations</span></h1>
+        <p>Search and add up to 8 medicines. We check every pair — plus cross-reference your profile.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Search and add medicines</div>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" id="int-search" placeholder="Type medicine name, e.g. warfarin, met, asp..." oninput="acInt(this.value)" onkeydown="acKeydown(event,'int-list')"/>
+          <div class="autocomplete-list" id="int-list"></div>
+        </div>
+        <div class="int-count" id="int-count">0 medicines added</div>
+        <div class="med-chips" id="int-chips"></div>
+        <div class="divider" id="int-btn-divider" style="display:none"></div>
+        <div class="btn-row" id="int-btn-row" style="display:none">
+          <button class="btn btn-primary" onclick="runInteractions()">Check Interactions</button>
+          <button class="btn btn-secondary btn-sm" onclick="clearIntMeds()">Clear all</button>
+        </div>
+      </div>
+
+      <div id="int-results-card" style="display:none" class="card">
+        <div class="card-label">Results</div>
+        <div class="metric-row" id="int-metrics"></div>
+        <div id="int-results-list"></div>
+        <div id="int-profile-conflicts" style="display:none">
+          <div class="divider"></div>
+          <div style="font-size:13px;font-weight:500;color:var(--warn);margin-bottom:10px">⚠️ Conflicts with your current medications</div>
+          <div id="int-profile-list"></div>
+        </div>
+        <div class="divider"></div>
+        <button class="btn btn-secondary btn-sm" onclick="aiIntCheck()">✦ AI Deep-Dive Analysis</button>
+        <div class="spinner-row" id="int-ai-spin"><div class="spin"></div>Running AI interaction analysis…</div>
+        <div id="int-ai-out" style="display:none">
+          <div class="ai-box" style="margin-top:14px">
+            <div class="ai-box-label"><span class="ai-dot"></span>AI deep-dive</div>
+            <div class="ai-text" id="int-ai-text"></div>
+          </div>
+          <p style="font-size:12px;color:var(--text-3);margin-top:8px">Does not replace pharmacist or doctor review.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: AI HEALTH ASSISTANT ── -->
+    <div id="tab-assistant" class="app-content" style="display:none">
+      <div class="hero">
+        <div class="hero-eyebrow">AI Health Assistant</div>
+        <h1>Describe your <span>symptoms</span></h1>
+        <p>Get general health guidance tailored to your medical history.</p>
+      </div>
+
+      <div class="card">
+        <div class="field-row" style="margin-bottom:16px">
+          <div class="field" style="max-width:120px">
+            <label class="field-label">Age</label>
+            <input type="number" id="ast-age" value="30" min="1" max="120"/>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Describe your symptoms</label>
+          <textarea id="ast-symptoms" maxlength="500" placeholder="e.g. headache for 2 days, mild fever, sore throat…" oninput="updateCharCount()"></textarea>
+          <div class="char-count" id="ast-char">0 / 500</div>
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="getHealthAdvice()">Get Advice</button>
+        <div class="spinner-row" id="ast-spin" style="margin-top:12px"><div class="spin"></div>Thinking…</div>
+        <div id="ast-out" style="display:none;margin-top:16px">
+          <div class="ai-box">
+            <div class="ai-box-label"><span class="ai-dot"></span>AI health advice</div>
+            <div class="ai-text" id="ast-ai-text"></div>
+          </div>
+          <p style="font-size:12px;color:var(--text-3);margin-top:8px">General information only — not a diagnosis. Please see a healthcare professional.</p>
+        </div>
+      </div>
+
+      <div class="card" id="ast-history-card" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="card-label" style="margin:0">Session history</div>
+          <button class="btn btn-ghost btn-sm" onclick="clearHistory()">Clear</button>
+        </div>
+        <div id="ast-history-list"></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: EDIT PROFILE (accessible from nav) ── -->
+    <div id="tab-profile-edit" class="app-content" style="display:none">
+      <div class="hero">
+        <div class="hero-eyebrow">My Profile</div>
+        <h1>Your <span>medical profile</span></h1>
+        <p>This information is used to personalise every safety check and health advice throughout the app.</p>
+      </div>
+      <div class="card" id="profile-edit-content"></div>
+    </div>
+
+  </main>
+
+  <footer>
+    MedHelix · For informational use only · Not a substitute for professional medical advice<br>
+    In an emergency, call your local emergency services immediately.
+    <div class="footer-sagar">Made by Sagar</div>
+  </footer>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+const DRUGS = {
+  "paracetamol":    {use:"Fever, mild to moderate pain",          side:"Liver damage in overdose",                warning:"Max 4g/day; avoid alcohol",                    dosage:"500mg–1g every 4–6 hrs",               cat:"Analgesic"},
+  "ibuprofen":      {use:"Pain, inflammation, fever",             side:"Stomach irritation, GI bleed",            warning:"Take with food; avoid in kidney disease",      dosage:"200–400mg every 6–8 hrs",              cat:"NSAID"},
+  "aspirin":        {use:"Pain, fever, blood thinning",           side:"Bleeding, stomach irritation",            warning:"Avoid in children under 16",                  dosage:"300–600mg every 4–6 hrs",              cat:"NSAID"},
+  "diclofenac":     {use:"Pain, inflammation, arthritis",         side:"GI irritation, fluid retention",          warning:"Avoid in heart/kidney disease; take with food",dosage:"50mg 2–3 times daily",                cat:"NSAID"},
+  "naproxen":       {use:"Pain, arthritis, gout, dysmenorrhoea",  side:"GI upset, headache, fluid retention",     warning:"Avoid prolonged use; take with food",          dosage:"250–500mg twice daily",                cat:"NSAID"},
+  "celecoxib":      {use:"Arthritis, acute pain",                 side:"Cardiovascular risk, GI upset",           warning:"Avoid in sulfa allergy; caution in heart disease",dosage:"100–200mg once or twice daily",      cat:"NSAID"},
+  "tramadol":       {use:"Moderate to severe pain",               side:"Nausea, dizziness, dependence",           warning:"Risk of dependence; avoid alcohol; seizure risk",dosage:"50–100mg every 4–6 hrs (max 400mg)", cat:"Opioid analgesic"},
+  "codeine":        {use:"Mild to moderate pain, cough",          side:"Constipation, drowsiness, dependence",    warning:"Avoid in children; respiratory depression risk",dosage:"15–60mg every 4–6 hrs",               cat:"Opioid analgesic"},
+  "amoxicillin":    {use:"Bacterial infections (ear, chest, UTI)",side:"Diarrhea, rash, nausea",                  warning:"Complete full course; check penicillin allergy",dosage:"250–500mg every 8 hrs",               cat:"Antibiotic"},
+  "azithromycin":   {use:"Respiratory, skin, STI infections",     side:"Nausea, diarrhea, QT prolongation",       warning:"Cardiac risk; avoid in liver disease",         dosage:"500mg day 1, 250mg days 2–5",          cat:"Antibiotic"},
+  "clarithromycin": {use:"Respiratory infections, H. pylori",     side:"Nausea, metallic taste, QT prolongation", warning:"Many drug interactions; avoid in liver disease",dosage:"250–500mg twice daily",                cat:"Antibiotic"},
+  "ciprofloxacin":  {use:"UTI, respiratory, GI infections",       side:"Nausea, tendon damage, QT prolongation",  warning:"Avoid in children; take with water; tendon risk",dosage:"250–750mg every 12 hrs",             cat:"Antibiotic"},
+  "levofloxacin":   {use:"Pneumonia, UTI, sinusitis",             side:"Tendon rupture, QT prolongation, nausea", warning:"Tendon and cardiac risk",                      dosage:"250–500mg once daily",                 cat:"Antibiotic"},
+  "doxycycline":    {use:"Bacterial infections, malaria prevention",side:"Photosensitivity, nausea",              warning:"Avoid sun; take with full glass of water",     dosage:"100mg every 12 hrs",                   cat:"Antibiotic"},
+  "metronidazole":  {use:"Bacterial and parasitic infections",    side:"Metallic taste, nausea",                  warning:"Strictly avoid alcohol during and 48 hrs after",dosage:"200–500mg every 8 hrs",              cat:"Antibiotic"},
+  "clindamycin":    {use:"Skin, bone, anaerobic infections",      side:"Diarrhea, C. diff colitis",               warning:"C. diff risk; report diarrhea immediately",    dosage:"150–450mg every 6 hrs",                cat:"Antibiotic"},
+  "nitrofurantoin": {use:"UTI treatment and prevention",          side:"Nausea, pulmonary reactions",             warning:"Avoid if eGFR<45; take with food",             dosage:"50–100mg every 6 hrs",                 cat:"Antibiotic"},
+  "rifampicin":     {use:"TB, leprosy, meningococcal prophylaxis",side:"Orange urine/tears, hepatotoxicity",      warning:"Powerful enzyme inducer; many drug interactions",dosage:"450–600mg once daily (fasting)",      cat:"Antibiotic"},
+  "fluconazole":    {use:"Candida, cryptococcal infections",      side:"Nausea, hepatotoxicity, QT prolongation", warning:"Many drug interactions; check liver function",  dosage:"50–400mg once daily",                  cat:"Antifungal"},
+  "atorvastatin":   {use:"High cholesterol, CVD prevention",      side:"Muscle pain, liver enzyme rise",          warning:"Avoid grapefruit; report muscle pain",         dosage:"10–80mg once daily",                   cat:"Statin"},
+  "simvastatin":    {use:"High cholesterol",                      side:"Myopathy, liver toxicity",                warning:"Avoid grapefruit; max 40mg with many drugs",   dosage:"10–40mg once daily (evening)",         cat:"Statin"},
+  "rosuvastatin":   {use:"High cholesterol, CVD prevention",      side:"Muscle pain, headache",                   warning:"Dose-reduce in Asian patients; avoid in pregnancy",dosage:"5–20mg once daily",                cat:"Statin"},
+  "amlodipine":     {use:"Hypertension, angina",                  side:"Ankle swelling, flushing, dizziness",     warning:"Do not stop abruptly",                         dosage:"5–10mg once daily",                    cat:"Calcium channel blocker"},
+  "nifedipine":     {use:"Hypertension, Raynaud's, angina",       side:"Flushing, headache, palpitations",        warning:"Avoid grapefruit; swallow SR tablets whole",   dosage:"10–30mg twice daily",                  cat:"Calcium channel blocker"},
+  "diltiazem":      {use:"Angina, hypertension, atrial fibrillation",side:"Bradycardia, constipation, flushing", warning:"Avoid with beta-blockers (heart block risk)",  dosage:"60–120mg 3 times daily",               cat:"Calcium channel blocker"},
+  "verapamil":      {use:"Angina, hypertension, SVT",             side:"Constipation, bradycardia, heart block",  warning:"Never combine with beta-blockers",             dosage:"40–120mg 3 times daily",               cat:"Calcium channel blocker"},
+  "lisinopril":     {use:"Hypertension, heart failure, post-MI",  side:"Dry cough, dizziness, hyperkalaemia",     warning:"Avoid in pregnancy; monitor renal function",   dosage:"5–40mg once daily",                    cat:"ACE inhibitor"},
+  "ramipril":       {use:"Hypertension, heart failure, CVD protection",side:"Dry cough, dizziness, hyperkalaemia",warning:"Avoid in pregnancy; monitor K+ and kidneys",   dosage:"1.25–10mg once daily",                 cat:"ACE inhibitor"},
+  "enalapril":      {use:"Hypertension, heart failure",           side:"Dry cough, hypotension, hyperkalaemia",   warning:"Avoid in pregnancy; first-dose hypotension",   dosage:"2.5–20mg twice daily",                 cat:"ACE inhibitor"},
+  "losartan":       {use:"Hypertension, heart failure, diabetic nephropathy",side:"Dizziness, hyperkalaemia",     warning:"Avoid in pregnancy; monitor K+ and kidneys",   dosage:"25–100mg once daily",                  cat:"ARB"},
+  "valsartan":      {use:"Hypertension, heart failure, post-MI",  side:"Dizziness, hyperkalaemia, fatigue",       warning:"Avoid in pregnancy; check K+ regularly",       dosage:"80–320mg once daily",                  cat:"ARB"},
+  "telmisartan":    {use:"Hypertension, CVD risk reduction",      side:"Dizziness, back pain",                    warning:"Avoid in pregnancy; monitor renal function",   dosage:"20–80mg once daily",                   cat:"ARB"},
+  "metoprolol":     {use:"Hypertension, angina, heart failure, AF",side:"Fatigue, cold extremities, bradycardia",  warning:"Do not stop abruptly; monitor pulse",          dosage:"25–200mg once or twice daily",         cat:"Beta-blocker"},
+  "atenolol":       {use:"Hypertension, angina",                  side:"Fatigue, cold hands, bradycardia",        warning:"Do not stop abruptly; avoid in asthma",        dosage:"25–100mg once daily",                  cat:"Beta-blocker"},
+  "bisoprolol":     {use:"Hypertension, heart failure, AF",       side:"Fatigue, bradycardia, cold extremities",  warning:"Do not stop abruptly; avoid in severe asthma", dosage:"1.25–10mg once daily",                 cat:"Beta-blocker"},
+  "propranolol":    {use:"Hypertension, anxiety, migraine prevention, AF",side:"Fatigue, cold extremities, nightmares",warning:"Do not stop abruptly; avoid in asthma",     dosage:"10–80mg 2–3 times daily",              cat:"Beta-blocker"},
+  "furosemide":     {use:"Fluid overload, heart failure, hypertension",side:"Hypokalaemia, dehydration, dizziness",warning:"Monitor electrolytes; take in morning",        dosage:"20–80mg once or twice daily",          cat:"Diuretic"},
+  "spironolactone": {use:"Heart failure, oedema, hyperaldosteronism",side:"Hyperkalaemia, gynaecomastia",         warning:"Monitor K+ carefully; avoid with ACE/ARB if K+ high",dosage:"25–200mg once daily",             cat:"Diuretic"},
+  "hydrochlorothiazide":{use:"Hypertension, oedema",             side:"Hypokalaemia, hyponatraemia",             warning:"Monitor electrolytes; may worsen diabetes/gout",dosage:"12.5–50mg once daily",                cat:"Diuretic"},
+  "warfarin":       {use:"VTE, AF, mechanical heart valves",      side:"Bleeding, bruising",                      warning:"Monitor INR regularly; many drug interactions",dosage:"Individualised — as prescribed",        cat:"Anticoagulant"},
+  "rivaroxaban":    {use:"DVT/PE treatment, AF, VTE prevention",  side:"Bleeding, anaemia",                       warning:"No routine antidote; avoid in renal failure",  dosage:"10–20mg once daily",                   cat:"Anticoagulant"},
+  "apixaban":       {use:"DVT/PE treatment and prevention, AF",   side:"Bleeding, bruising",                      warning:"Avoid in severe renal/hepatic impairment",     dosage:"2.5–10mg twice daily",                 cat:"Anticoagulant"},
+  "clopidogrel":    {use:"ACS, post-stent, stroke prevention",    side:"Bleeding, bruising",                      warning:"Do not stop without doctor advice",             dosage:"75mg once daily",                      cat:"Antiplatelet"},
+  "digoxin":        {use:"Heart failure, AF rate control",        side:"Nausea, bradycardia, visual disturbances",warning:"Narrow therapeutic index; monitor levels and K+",dosage:"62.5–250mcg once daily",             cat:"Cardiac glycoside"},
+  "amiodarone":     {use:"Ventricular and supraventricular arrhythmias",side:"Thyroid dysfunction, pulmonary toxicity",warning:"Long half-life; many serious drug interactions",dosage:"100–200mg once daily (maintenance)",cat:"Antiarrhythmic"},
+  "isosorbide mononitrate":{use:"Angina prevention",             side:"Headache, dizziness, hypotension",        warning:"Nitrate tolerance — provide nitrate-free period",dosage:"10–120mg once daily (SR)",            cat:"Nitrate"},
+  "glyceryl trinitrate":{use:"Acute angina",                     side:"Headache, flushing, hypotension",         warning:"Sit down when using; store away from light",   dosage:"0.3–1mg sublingual PRN",               cat:"Nitrate"},
+  "metformin":      {use:"Type 2 diabetes (first-line)",         side:"GI upset, nausea, lactic acidosis (rare)",warning:"Avoid if eGFR<30; avoid alcohol",              dosage:"500mg–1g twice daily with meals",      cat:"Antidiabetic"},
+  "glibenclamide":  {use:"Type 2 diabetes",                      side:"Hypoglycaemia, weight gain",               warning:"Avoid skipping meals; hypoglycaemia risk",     dosage:"2.5–15mg daily with breakfast",        cat:"Antidiabetic"},
+  "gliclazide":     {use:"Type 2 diabetes",                      side:"Hypoglycaemia, weight gain",               warning:"Monitor blood glucose regularly",               dosage:"40–320mg daily",                       cat:"Antidiabetic"},
+  "sitagliptin":    {use:"Type 2 diabetes (add-on therapy)",     side:"Nasopharyngitis, pancreatitis (rare)",     warning:"Dose-reduce in renal impairment",              dosage:"100mg once daily",                     cat:"Antidiabetic"},
+  "empagliflozin":  {use:"Type 2 diabetes, heart failure, CKD",  side:"UTI, genital infections, DKA",             warning:"Stop before surgery; avoid if eGFR<30",        dosage:"10–25mg once daily",                   cat:"Antidiabetic"},
+  "liraglutide":    {use:"Type 2 diabetes, obesity",             side:"Nausea, vomiting, pancreatitis (rare)",    warning:"Avoid with thyroid cancer history",             dosage:"0.6–1.8mg SC once daily",              cat:"Antidiabetic"},
+  "insulin glargine":{use:"Type 1 and 2 diabetes (basal insulin)",side:"Hypoglycaemia, weight gain",             warning:"Do not mix with other insulins; monitor BG",   dosage:"Individualised SC once daily",         cat:"Antidiabetic"},
+  "salbutamol":     {use:"Asthma, COPD bronchospasm relief",     side:"Tremors, tachycardia",                     warning:"Reliever only — not a preventer",               dosage:"100–200mcg (1–2 puffs) PRN",           cat:"Bronchodilator"},
+  "salmeterol":     {use:"Asthma and COPD maintenance",          side:"Tremor, tachycardia, headache",            warning:"Never use as reliever; always with ICS in asthma",dosage:"50mcg twice daily (inhaled)",        cat:"Bronchodilator"},
+  "tiotropium":     {use:"COPD maintenance",                     side:"Dry mouth, urinary retention",             warning:"Avoid in glaucoma and BPH",                    dosage:"18mcg once daily (inhaled)",           cat:"Bronchodilator"},
+  "theophylline":   {use:"COPD and asthma (add-on)",             side:"Nausea, tachycardia, seizures (toxicity)", warning:"Narrow therapeutic index; many drug interactions",dosage:"100–300mg twice daily (SR)",          cat:"Bronchodilator"},
+  "beclometasone":  {use:"Asthma prevention (inhaled corticosteroid)",side:"Oral candida, hoarseness",           warning:"Rinse mouth after use; do not use as reliever",dosage:"100–400mcg twice daily (inhaled)",     cat:"Corticosteroid"},
+  "fluticasone":    {use:"Asthma, COPD, allergic rhinitis",      side:"Oral candida, hoarseness",                warning:"Rinse mouth after use",                         dosage:"100–500mcg twice daily (inhaled)",     cat:"Corticosteroid"},
+  "montelukast":    {use:"Asthma prevention, allergic rhinitis", side:"Headache, neuropsychiatric effects",       warning:"Report mood changes or sleep disturbance",     dosage:"10mg once daily (evening)",            cat:"Leukotriene antagonist"},
+  "omeprazole":     {use:"GERD, peptic ulcer, H. pylori",        side:"Headache, nausea, hypomagnesaemia",       warning:"Long-term: fracture and C. diff risk",          dosage:"20–40mg once daily before meals",      cat:"PPI"},
+  "pantoprazole":   {use:"GERD, Zollinger-Ellison syndrome",     side:"Headache, diarrhea, hypomagnesaemia",     warning:"Long-term: C. diff and fracture risk",          dosage:"40mg once daily before breakfast",     cat:"PPI"},
+  "lansoprazole":   {use:"GERD, peptic ulcer, H. pylori",        side:"Headache, nausea, diarrhea",              warning:"Long-term: fracture and magnesium monitoring",  dosage:"15–30mg once daily",                   cat:"PPI"},
+  "ranitidine":     {use:"GERD, peptic ulcer (H2 blocker)",      side:"Headache, constipation",                  warning:"Check recalled formulations in your region",    dosage:"150mg twice daily or 300mg nightly",   cat:"H2 blocker"},
+  "famotidine":     {use:"GERD, peptic ulcer (H2 blocker)",      side:"Headache, dizziness",                     warning:"Dose-reduce in renal disease",                  dosage:"20–40mg once or twice daily",          cat:"H2 blocker"},
+  "domperidone":    {use:"Nausea, vomiting, gastroparesis",      side:"QT prolongation, galactorrhoea",          warning:"Cardiac risk; avoid in liver disease; max 10mg TDS",dosage:"10mg 3 times daily (before meals)", cat:"Antiemetic"},
+  "metoclopramide": {use:"Nausea, vomiting, gastroparesis",      side:"Extrapyramidal effects, drowsiness",      warning:"Short-term use only (max 5 days); tardive dyskinesia risk",dosage:"10mg 3 times daily",       cat:"Antiemetic"},
+  "ondansetron":    {use:"Chemotherapy and post-op nausea",      side:"Headache, constipation, QT prolongation", warning:"Avoid IV bolus; serotonin syndrome risk with SSRIs",dosage:"4–8mg 3 times daily",             cat:"Antiemetic"},
+  "sertraline":     {use:"Depression, anxiety, OCD, PTSD",       side:"Nausea, insomnia, sexual dysfunction",    warning:"Takes 2–4 weeks; do not stop abruptly",        dosage:"50–200mg once daily",                  cat:"SSRI"},
+  "fluoxetine":     {use:"Depression, OCD, bulimia, panic disorder",side:"Insomnia, nausea, sexual dysfunction", warning:"Long half-life; many drug interactions",        dosage:"20–60mg once daily",                   cat:"SSRI"},
+  "citalopram":     {use:"Depression, panic disorder",           side:"QT prolongation, nausea, insomnia",       warning:"QT risk; max 20mg in elderly or hepatic disease",dosage:"20–40mg once daily",                 cat:"SSRI"},
+  "escitalopram":   {use:"Depression, generalised anxiety disorder",side:"Nausea, insomnia, sexual dysfunction", warning:"QT risk; most selective SSRI",                  dosage:"10–20mg once daily",                   cat:"SSRI"},
+  "venlafaxine":    {use:"Depression, GAD, social anxiety, panic",side:"Nausea, hypertension, discontinuation syndrome",warning:"Monitor BP; taper slowly",               dosage:"75–375mg once daily (XR)",             cat:"SNRI"},
+  "duloxetine":     {use:"Depression, GAD, neuropathic pain",    side:"Nausea, dizziness, sweating",             warning:"Avoid in hepatic disease; discontinuation syndrome",dosage:"30–120mg once daily",              cat:"SNRI"},
+  "amitriptyline":  {use:"Depression, neuropathic pain, migraine prevention",side:"Sedation, dry mouth, constipation",warning:"Anticholinergic; avoid in elderly; cardiac risk",dosage:"10–150mg at night",             cat:"Tricyclic antidepressant"},
+  "mirtazapine":    {use:"Depression (especially with insomnia)", side:"Sedation, weight gain, increased appetite",warning:"Agranulocytosis (rare); useful when sedation is desired",dosage:"15–45mg at night",         cat:"NaSSA antidepressant"},
+  "diazepam":       {use:"Anxiety, muscle spasm, alcohol withdrawal, seizures",side:"Sedation, respiratory depression, dependence",warning:"High dependence risk; short-term only; avoid alcohol",dosage:"2–10mg 2–4 times daily",cat:"Benzodiazepine"},
+  "lorazepam":      {use:"Anxiety, seizures, agitation",         side:"Sedation, respiratory depression, dependence",warning:"Short-term use only; high dependence risk",  dosage:"0.5–4mg daily in divided doses",       cat:"Benzodiazepine"},
+  "clonazepam":     {use:"Epilepsy, panic disorder, anxiety",    side:"Sedation, dependence, coordination problems",warning:"Dependence risk; taper slowly; avoid alcohol",dosage:"0.25–2mg as prescribed",             cat:"Benzodiazepine"},
+  "alprazolam":     {use:"Panic disorder, anxiety",              side:"Sedation, dependence, withdrawal seizures",warning:"Very high dependence risk; taper very slowly",  dosage:"0.25–1mg 3 times daily",              cat:"Benzodiazepine"},
+  "zopiclone":      {use:"Short-term insomnia",                  side:"Metallic taste, drowsiness, dependence",  warning:"Short-term (2–4 weeks) only",                  dosage:"3.75–7.5mg at bedtime",                cat:"Z-drug (hypnotic)"},
+  "zolpidem":       {use:"Short-term insomnia",                  side:"Somnambulism, drowsiness, dependence",    warning:"Do not drive next day; short-term only",        dosage:"5–10mg at bedtime",                    cat:"Z-drug (hypnotic)"},
+  "haloperidol":    {use:"Schizophrenia, acute psychosis, Tourette's",side:"Extrapyramidal effects, tardive dyskinesia, QT prolongation",warning:"Monitor for movement disorders; QT risk",dosage:"0.5–20mg daily (as prescribed)",cat:"Antipsychotic"},
+  "risperidone":    {use:"Schizophrenia, bipolar disorder",      side:"Weight gain, metabolic syndrome, extrapyramidal effects",warning:"Monitor weight, glucose, lipids, and movement",dosage:"1–16mg daily (as prescribed)", cat:"Antipsychotic"},
+  "olanzapine":     {use:"Schizophrenia, bipolar disorder",      side:"Weight gain, diabetes, sedation, metabolic syndrome",warning:"Significant metabolic risk; monitor glucose/lipids",dosage:"5–20mg once daily (at night)",cat:"Antipsychotic"},
+  "quetiapine":     {use:"Schizophrenia, bipolar disorder, depression",side:"Sedation, weight gain, metabolic syndrome",warning:"QT prolongation; monitor metabolic parameters",dosage:"25–800mg daily (as prescribed)", cat:"Antipsychotic"},
+  "lithium":        {use:"Bipolar disorder (mood stabiliser)",   side:"Tremor, polyuria, thyroid/renal toxicity", warning:"Narrow therapeutic index; monitor levels, renal and thyroid",dosage:"400–1200mg daily in divided doses",cat:"Mood stabiliser"},
+  "valproate":      {use:"Epilepsy, bipolar disorder, migraine prevention",side:"Weight gain, hair loss, tremor, hepatotoxicity, teratogenicity",warning:"Absolutely avoid in pregnancy",dosage:"500mg–2g daily in divided doses",cat:"Anticonvulsant"},
+  "carbamazepine":  {use:"Epilepsy, trigeminal neuralgia, bipolar",side:"Diplopia, ataxia, hyponatraemia, Stevens-Johnson",warning:"Many drug interactions",              dosage:"200–400mg twice daily",                cat:"Anticonvulsant"},
+  "lamotrigine":    {use:"Epilepsy, bipolar disorder",           side:"Rash (including SJS), dizziness, headache",warning:"Titrate very slowly to reduce rash risk",       dosage:"25–200mg twice daily",                 cat:"Anticonvulsant"},
+  "phenytoin":      {use:"Epilepsy, status epilepticus",         side:"Gingival hyperplasia, ataxia, nystagmus, teratogenicity",warning:"Narrow therapeutic index; many interactions",dosage:"150–300mg twice daily (as prescribed)",cat:"Anticonvulsant"},
+  "levetiracetam":  {use:"Epilepsy",                             side:"Behavioural changes, irritability, drowsiness",warning:"Psychiatric side effects; dose-reduce in renal disease",dosage:"250mg–1.5g twice daily",  cat:"Anticonvulsant"},
+  "gabapentin":     {use:"Epilepsy, neuropathic pain",           side:"Dizziness, sedation, weight gain, dependence",warning:"Misuse potential; reduce dose in renal disease",dosage:"100–3600mg daily in 3 doses",      cat:"Anticonvulsant"},
+  "pregabalin":     {use:"Neuropathic pain, epilepsy, GAD",      side:"Dizziness, sedation, weight gain, dependence",warning:"Controlled drug; significant misuse potential",dosage:"75–300mg twice daily",              cat:"Anticonvulsant"},
+  "levothyroxine":  {use:"Hypothyroidism",                       side:"Palpitations, weight loss if over-dosed",  warning:"Take on empty stomach; consistent brand/timing",dosage:"25–200mcg once daily (morning)",      cat:"Thyroid hormone"},
+  "carbimazole":    {use:"Hyperthyroidism",                      side:"Agranulocytosis (rare), rash",             warning:"Report sore throat/fever urgently",             dosage:"10–40mg once daily",                   cat:"Antithyroid"},
+  "prednisolone":   {use:"Inflammation, autoimmune disease, asthma",side:"Weight gain, mood changes, hyperglycaemia, osteoporosis",warning:"Do not stop abruptly; Addisonian crisis risk",dosage:"5–60mg daily (as prescribed)",cat:"Corticosteroid"},
+  "dexamethasone":  {use:"Severe inflammation, cerebral oedema, COVID, croup",side:"Hyperglycaemia, immunosuppression, insomnia",warning:"Do not stop abruptly",             dosage:"0.5–20mg daily (as prescribed)",       cat:"Corticosteroid"},
+  "allopurinol":    {use:"Gout prevention, kidney stones (uric acid)",side:"Rash, Stevens-Johnson syndrome (rare)",warning:"Do not start during acute gout attack",        dosage:"100–300mg once daily",                 cat:"Antigout"},
+  "colchicine":     {use:"Acute gout, gout prophylaxis, pericarditis",side:"Diarrhea, nausea, myopathy",           warning:"Narrow therapeutic index; dose-reduce in renal/hepatic disease",dosage:"500mcg 2–4 times daily",cat:"Antigout"},
+  "methotrexate":   {use:"Rheumatoid arthritis, psoriasis, ectopic pregnancy",side:"Hepatotoxicity, pulmonary toxicity, myelosuppression",warning:"Weekly dosing only; folate supplementation required",dosage:"7.5–25mg once weekly",cat:"DMARD"},
+  "hydroxychloroquine":{use:"RA, lupus, malaria",               side:"Retinopathy, GI upset",                    warning:"Annual eye screening after 5 years",            dosage:"200–400mg once daily",                 cat:"DMARD"},
+  "alendronic acid":{use:"Osteoporosis prevention and treatment",side:"Oesophageal irritation, jaw osteonecrosis (rare)",warning:"Take on empty stomach; sit upright for 30 mins",dosage:"70mg once weekly (fasting, with water)",cat:"Bisphosphonate"},
+  "tamsulosin":     {use:"BPH (benign prostatic hyperplasia)",   side:"Postural hypotension, dizziness, retrograde ejaculation",warning:"First-dose hypotension; caution with PDE5 inhibitors",dosage:"400mcg once daily after breakfast",cat:"Alpha-blocker"},
+  "sildenafil":     {use:"Erectile dysfunction, pulmonary hypertension",side:"Headache, flushing, visual disturbance, hypotension",warning:"Absolutely contraindicated with nitrates (fatal hypotension)",dosage:"25–100mg 1 hr before sex",cat:"PDE5 inhibitor"},
+  "tadalafil":      {use:"Erectile dysfunction, BPH, pulmonary hypertension",side:"Headache, myalgia, back pain",  warning:"Absolutely contraindicated with nitrates; 36-hr duration",dosage:"10–20mg PRN or 5mg once daily",cat:"PDE5 inhibitor"},
+  "tamoxifen":      {use:"Hormone-receptor positive breast cancer",side:"Hot flushes, VTE, endometrial cancer risk",warning:"VTE risk; endometrial cancer surveillance",    dosage:"20mg once daily",                      cat:"Hormone therapy"},
+  "ciclosporin":    {use:"Transplant rejection, autoimmune disease",side:"Nephrotoxicity, hypertension, gingival hyperplasia",warning:"Monitor renal function and BP; many interactions",dosage:"Individualised — as prescribed",cat:"Immunosuppressant"},
+  "azathioprine":   {use:"Transplant, autoimmune conditions, IBD",side:"Myelosuppression, hepatotoxicity, infection risk",warning:"Check TPMT enzyme level before starting; avoid allopurinol",dosage:"1–3mg/kg daily (as prescribed)",cat:"Immunosuppressant"},
+  "cetirizine":     {use:"Allergic rhinitis, urticaria, hay fever",side:"Mild drowsiness, dry mouth",              warning:"Less sedating than older antihistamines",       dosage:"10mg once daily",                      cat:"Antihistamine"},
+  "loratadine":     {use:"Allergic rhinitis, urticaria",         side:"Headache, dry mouth",                      warning:"Non-sedating; safe in most patients",           dosage:"10mg once daily",                      cat:"Antihistamine"},
+  "fexofenadine":   {use:"Allergic rhinitis, urticaria",         side:"Headache, GI upset",                       warning:"Take with water not fruit juice",               dosage:"120–180mg once daily",                 cat:"Antihistamine"},
+  "chlorphenamine": {use:"Allergic reactions, urticaria, hay fever",side:"Sedation, dry mouth, urinary retention", warning:"Sedating — avoid driving; avoid in elderly",   dosage:"4mg every 4–6 hrs",                    cat:"Antihistamine"},
+  "adrenaline (epinephrine)":{use:"Anaphylaxis, cardiac arrest", side:"Tachycardia, hypertension, anxiety",       warning:"IM for anaphylaxis (thigh); auto-injector for self-administration",dosage:"0.3–0.5mg IM (300–500mcg)",cat:"Emergency medication"},
+  "naloxone":       {use:"Opioid overdose reversal",             side:"Acute opioid withdrawal, agitation",       warning:"Short-acting — may need repeated doses",        dosage:"0.4–2mg IV/IM/SC; repeat every 2–3 min",cat:"Antidote"},
+  "tranexamic acid":{use:"Heavy menstrual bleeding, bleeding prevention",side:"GI upset, VTE risk",               warning:"Avoid in history of VTE",                      dosage:"1–1.5g 3 times daily for up to 4 days",cat:"Antifibrinolytic"},
+  "folic acid":     {use:"Folate deficiency, pregnancy, methotrexate supplement",side:"Very rare at therapeutic doses",warning:"Do not delay B12 treatment if deficiency unconfirmed",dosage:"400mcg–5mg daily",          cat:"Vitamin / Supplement"},
+  "iron sulfate":   {use:"Iron deficiency anaemia",              side:"Constipation, dark stools, GI upset",      warning:"Separate from other medicines by 2 hrs; take with vitamin C",dosage:"200mg 2–3 times daily",   cat:"Supplement"},
+  "ezetimibe":      {use:"High cholesterol (add-on or statin intolerant)",side:"GI upset, myalgia",               warning:"Combined with statin for added reduction",      dosage:"10mg once daily",                      cat:"Cholesterol absorption inhibitor"},
+  "clonidine":      {use:"Hypertension, ADHD, opioid withdrawal",side:"Dry mouth, sedation, rebound hypertension on stopping",warning:"Do not stop abruptly — rebound hypertension",dosage:"50–300mcg 2–3 times daily",  cat:"Alpha-2 agonist"},
+  "isotretinoin":   {use:"Severe acne",                          side:"Teratogenicity, dry skin/lips, depression",warning:"Pregnancy prevention programme essential; monitor mood",dosage:"0.5–1mg/kg/day in divided doses",cat:"Retinoid"},
+  "chloroquine":    {use:"Malaria prevention, lupus, RA",        side:"Retinopathy, GI upset, QT prolongation",  warning:"Annual eye screening; QT risk; check G6PD",     dosage:"500mg once weekly (prophylaxis)",       cat:"Antimalarial"},
+  "ivermectin":     {use:"Strongyloidiasis, onchocerciasis, scabies",side:"Dizziness, GI upset",                 warning:"Avoid in children under 15kg",                 dosage:"150–200mcg/kg once",                   cat:"Antiparasitic"},
+  "albendazole":    {use:"Intestinal worms, hydatid disease",    side:"GI upset, hepatotoxicity",                 warning:"Teratogenic — avoid in pregnancy",              dosage:"400mg once (worms)",                   cat:"Antiparasitic"},
+  "colestyramine":  {use:"Hypercholesterolaemia, bile acid malabsorption",side:"Constipation, bloating, reduced absorption of other drugs",warning:"Take other medicines 1 hr before or 4 hrs after",dosage:"4–24g daily",cat:"Bile acid sequestrant"},
+  "misoprostol":    {use:"Peptic ulcer prevention with NSAIDs, cervical ripening",side:"Diarrhea, abdominal cramps",warning:"Absolutely contraindicated in pregnancy for GI use",dosage:"200mcg 4 times daily with meals",cat:"Prostaglandin"},
+  "baclofen":       {use:"Muscle spasm, spasticity, MS",         side:"Sedation, weakness, dizziness",            warning:"Do not stop abruptly (seizure risk); dose-reduce in renal disease",dosage:"5–20mg 3 times daily",cat:"Muscle relaxant"},
+  "melatonin":      {use:"Insomnia, jet lag, circadian rhythm disorders",side:"Drowsiness, headache",             warning:"Use 1–2 hrs before sleep; short-term preferred",dosage:"0.5–5mg at bedtime",                  cat:"Hypnotic"},
+  "donepezil":      {use:"Alzheimer's disease",                  side:"Nausea, bradycardia, insomnia",            warning:"May worsen bradycardia; take at bedtime to reduce GI effects",dosage:"5–10mg at bedtime",     cat:"Dementia treatment"},
+  "methylphenidate":{use:"ADHD, narcolepsy",                     side:"Insomnia, reduced appetite, elevated BP",  warning:"Controlled drug; cardiovascular monitoring required",dosage:"5–60mg daily in divided doses",    cat:"CNS stimulant"},
+};
+
+const INTERACTIONS = {
+  "aspirin|ibuprofen":              ["danger",  "Increased risk of serious GI bleeding; ibuprofen may also block aspirin's antiplatelet effect."],
+  "warfarin|aspirin":               ["danger",  "Very high bleeding risk — dangerous combination without close monitoring."],
+  "warfarin|ibuprofen":             ["danger",  "NSAIDs significantly increase bleeding risk with warfarin."],
+  "warfarin|diclofenac":            ["danger",  "High bleeding risk — NSAIDs displace warfarin and increase GI bleed risk."],
+  "warfarin|naproxen":              ["danger",  "Significant bleeding risk — naproxen inhibits platelets and increases warfarin effect."],
+  "warfarin|ciprofloxacin":         ["danger",  "Ciprofloxacin significantly potentiates warfarin — INR can rise dangerously."],
+  "warfarin|clarithromycin":        ["danger",  "Macrolides inhibit warfarin metabolism; INR may rise sharply."],
+  "warfarin|azithromycin":          ["warning", "Moderate INR increase possible; monitor within 3–5 days."],
+  "warfarin|metronidazole":         ["danger",  "Metronidazole inhibits warfarin metabolism; INR can double."],
+  "warfarin|fluconazole":           ["danger",  "Fluconazole potently inhibits CYP2C9 — INR can become dangerously high."],
+  "warfarin|amiodarone":            ["danger",  "Amiodarone inhibits warfarin metabolism; INR rises over weeks."],
+  "warfarin|rifampicin":            ["danger",  "Rifampicin powerfully induces warfarin metabolism — anticoagulant effect dramatically reduced."],
+  "warfarin|carbamazepine":         ["danger",  "Carbamazepine induces warfarin metabolism; INR may fall, increasing clot risk."],
+  "warfarin|clopidogrel":           ["danger",  "Dual anticoagulant/antiplatelet combination — very high bleeding risk."],
+  "clopidogrel|aspirin":            ["warning", "Increased bleeding risk; sometimes used intentionally in ACS — assess benefit vs risk."],
+  "clopidogrel|omeprazole":         ["info",    "Omeprazole may reduce clopidogrel activation via CYP2C19; consider pantoprazole instead."],
+  "aspirin|prednisolone":           ["warning", "Combined use increases risk of GI ulcers and bleeding significantly."],
+  "ibuprofen|prednisolone":         ["warning", "High risk of GI ulcers and bleeding; add PPI if combination necessary."],
+  "diclofenac|prednisolone":        ["warning", "High risk of GI ulcers and GI bleeding."],
+  "sertraline|tramadol":            ["danger",  "Serotonin syndrome risk — potentially life-threatening."],
+  "fluoxetine|tramadol":            ["danger",  "Serotonin syndrome risk; fluoxetine also inhibits tramadol's analgesic activation."],
+  "escitalopram|tramadol":          ["danger",  "Serotonin syndrome risk; avoid combination."],
+  "venlafaxine|tramadol":           ["danger",  "Serotonin syndrome risk — both increase serotonin."],
+  "duloxetine|tramadol":            ["danger",  "Serotonin syndrome risk."],
+  "lithium|ibuprofen":              ["danger",  "NSAIDs reduce renal lithium excretion — lithium toxicity risk."],
+  "lithium|naproxen":               ["danger",  "NSAIDs reduce renal lithium excretion — lithium toxicity risk."],
+  "lithium|diclofenac":             ["danger",  "NSAIDs reduce renal lithium excretion — lithium toxicity risk."],
+  "lithium|furosemide":             ["warning", "Dehydration from diuretics increases lithium toxicity risk."],
+  "lithium|hydrochlorothiazide":    ["warning", "Thiazide-induced sodium loss increases lithium retention and toxicity risk."],
+  "citalopram|amiodarone":          ["danger",  "Both prolong QT — risk of fatal arrhythmia."],
+  "escitalopram|amiodarone":        ["danger",  "Both prolong QT — serious cardiac risk."],
+  "azithromycin|amiodarone":        ["danger",  "Both prolong QT — potentially fatal arrhythmia risk."],
+  "ciprofloxacin|amiodarone":       ["danger",  "Both prolong QT — avoid combination."],
+  "levofloxacin|amiodarone":        ["danger",  "Both prolong QT — avoid combination."],
+  "ondansetron|amiodarone":         ["danger",  "Both prolong QT — serious arrhythmia risk."],
+  "haloperidol|amiodarone":         ["danger",  "Both prolong QT — high arrhythmia risk."],
+  "quetiapine|amiodarone":          ["danger",  "Both prolong QT — avoid combination."],
+  "domperidone|azithromycin":       ["danger",  "Both prolong QT — can cause torsades de pointes."],
+  "verapamil|digoxin":              ["danger",  "Verapamil increases digoxin levels and both slow AV conduction — heart block risk."],
+  "amiodarone|digoxin":             ["danger",  "Amiodarone raises digoxin levels by up to 100% — toxicity risk."],
+  "verapamil|bisoprolol":           ["danger",  "Both slow AV conduction — risk of complete heart block and asystole."],
+  "verapamil|metoprolol":           ["danger",  "Combination can cause severe bradycardia and heart block."],
+  "verapamil|atenolol":             ["danger",  "Severe bradycardia and heart block risk."],
+  "diltiazem|metoprolol":           ["warning", "Additive bradycardia and AV conduction slowing."],
+  "sildenafil|isosorbide mononitrate":["danger","Combination causes severe, potentially fatal hypotension. Absolutely contraindicated."],
+  "sildenafil|glyceryl trinitrate": ["danger",  "Combination causes severe hypotension — can be fatal."],
+  "tadalafil|glyceryl trinitrate":  ["danger",  "PDE5 inhibitors with nitrates cause severe hypotension. Absolutely contraindicated."],
+  "tadalafil|isosorbide mononitrate":["danger", "PDE5 inhibitors with nitrates cause severe hypotension. Absolutely contraindicated."],
+  "tamsulosin|sildenafil":          ["warning", "Combined alpha-blocker + PDE5 inhibitor can cause severe postural hypotension."],
+  "tamsulosin|tadalafil":           ["warning", "Significant hypotension risk when combined."],
+  "ramipril|spironolactone":        ["warning", "Both increase potassium — hyperkalaemia risk, especially in renal impairment."],
+  "lisinopril|spironolactone":      ["warning", "Hyperkalaemia risk — monitor K+ closely."],
+  "losartan|spironolactone":        ["warning", "Hyperkalaemia risk — monitor K+ closely."],
+  "lisinopril|ibuprofen":           ["warning", "NSAIDs reduce ACE inhibitor effect and can cause acute kidney injury."],
+  "ramipril|ibuprofen":             ["warning", "NSAIDs reduce antihypertensive effect and increase renal impairment risk."],
+  "amlodipine|simvastatin":         ["warning", "Amlodipine raises simvastatin levels — max 20mg simvastatin with amlodipine."],
+  "simvastatin|clarithromycin":     ["danger",  "Clarithromycin dramatically raises simvastatin levels — severe myopathy risk."],
+  "atorvastatin|clarithromycin":    ["warning", "Clarithromycin raises atorvastatin levels — myopathy risk."],
+  "simvastatin|itraconazole":       ["danger",  "Itraconazole powerfully raises simvastatin levels — rhabdomyolysis risk."],
+  "metformin|furosemide":           ["warning", "Furosemide-induced dehydration increases lactic acidosis risk with metformin."],
+  "doxycycline|metformin":          ["info",    "Minor interaction; monitor blood sugar more closely."],
+  "levothyroxine|metformin":        ["info",    "Some evidence metformin can reduce levothyroxine effectiveness; monitor thyroid levels."],
+  "glibenclamide|fluconazole":      ["danger",  "Fluconazole raises sulphonylurea levels — severe hypoglycaemia risk."],
+  "gliclazide|fluconazole":         ["danger",  "Fluconazole inhibits gliclazide metabolism — hypoglycaemia risk."],
+  "insulin glargine|propranolol":   ["warning", "Beta-blockers mask hypoglycaemia symptoms and can prolong hypoglycaemia."],
+  "diazepam|codeine":               ["danger",  "Combined CNS and respiratory depression — high overdose risk."],
+  "lorazepam|codeine":              ["danger",  "Combined CNS and respiratory depression."],
+  "alprazolam|codeine":             ["danger",  "Benzodiazepine + opioid — high risk of respiratory depression and death."],
+  "gabapentin|codeine":             ["danger",  "Gabapentin combined with opioids dramatically increases fatal overdose risk."],
+  "pregabalin|codeine":             ["danger",  "Pregabalin combined with opioids significantly increases respiratory depression risk."],
+  "pregabalin|tramadol":            ["warning", "Combined sedation and seizure risk."],
+  "gabapentin|tramadol":            ["warning", "Combined sedation; tramadol lowers seizure threshold."],
+  "metronidazole|alcohol":          ["danger",  "Disulfiram-like reaction — severe flushing, nausea, vomiting, tachycardia."],
+  "furosemide|lithium":             ["warning", "Dehydration from diuretics increases lithium toxicity."],
+  "methotrexate|ibuprofen":         ["danger",  "NSAIDs reduce methotrexate renal excretion — methotrexate toxicity risk."],
+  "methotrexate|naproxen":          ["danger",  "NSAIDs reduce methotrexate excretion — toxicity risk."],
+  "methotrexate|aspirin":           ["danger",  "Salicylates reduce methotrexate excretion — toxicity risk."],
+  "azathioprine|allopurinol":       ["danger",  "Allopurinol inhibits azathioprine metabolism — severe myelosuppression. Reduce azathioprine dose by 75%."],
+  "theophylline|ciprofloxacin":     ["danger",  "Ciprofloxacin raises theophylline to toxic levels — seizure and arrhythmia risk."],
+  "theophylline|clarithromycin":    ["warning", "Clarithromycin raises theophylline levels — monitor closely."],
+  "colchicine|clarithromycin":      ["danger",  "Clarithromycin raises colchicine levels — potentially fatal toxicity."],
+  "tamoxifen|paroxetine":           ["danger",  "Paroxetine inhibits tamoxifen activation — reduced cancer treatment efficacy."],
+  "tamoxifen|fluoxetine":           ["danger",  "Fluoxetine inhibits tamoxifen activation — reduced cancer treatment efficacy."],
+  "tamoxifen|sertraline":           ["warning", "Moderate CYP2D6 inhibition; reduced tamoxifen activation. Avoid if possible."],
+  "isotretinoin|doxycycline":       ["danger",  "Combined use causes benign intracranial hypertension — contraindicated."],
+  "valproate|aspirin":              ["warning", "Aspirin displaces valproate from protein binding — valproate toxicity risk."],
+};
+
+const DRUG_LIST = Object.keys(DRUGS).sort();
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let user = null;         // { identifier, method }
+let profile = null;      // profile object
+let intMeds = [];        // selected meds for interaction checker
+let curMeds = [];        // current meds in profile setup
+let anaCurrentMed = null;
+let historyItems = [];
+
+// ══════════════════════════════════════════════════════════════
+// PAGE ROUTING
+// ══════════════════════════════════════════════════════════════
+function showPageOnly(id){
+  ['login-page','profile-setup-page','app-page'].forEach(p=>document.getElementById(p).classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════════
+let loginMethod = 'email';
+function switchLoginTab(method, btn){
+  loginMethod = method;
+  document.querySelectorAll('.login-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('login-email-field').style.display = method==='email'?'block':'none';
+  document.getElementById('login-phone-field').style.display = method==='phone'?'block':'none';
+  hideEl('login-email-err'); hideEl('login-phone-err');
+}
+function doLogin(){
+  hideEl('login-email-err'); hideEl('login-phone-err');
+  let val = '', ok = false;
+  if(loginMethod==='email'){
+    val = document.getElementById('login-email').value.trim();
+    ok = /^[^@]+@[^@]+\.[^@]+$/.test(val);
+    if(!ok){showEl('login-email-err');return;}
+  } else {
+    val = document.getElementById('login-phone').value.trim();
+    ok = val.replace(/\D/g,'').length >= 8;
+    if(!ok){showEl('login-phone-err');return;}
+  }
+  user = {identifier: val, method: loginMethod};
+  showPageOnly('profile-setup-page');
+}
+
+// ══════════════════════════════════════════════════════════════
+// PROFILE SETUP
+// ══════════════════════════════════════════════════════════════
+document.querySelectorAll('.ms-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>chip.classList.toggle('on'));
+});
+
+function getSelected(containerId){
+  return Array.from(document.querySelectorAll(`#${containerId} .ms-chip.on`)).map(c=>c.dataset.v);
+}
+
+function saveProfile(){
+  const name = document.getElementById('p-name').value.trim();
+  if(!name){document.getElementById('p-name-err').style.display='block';return;}
+  document.getElementById('p-name-err').style.display='none';
+  profile = {
+    name, age: document.getElementById('p-age').value,
+    gender: document.getElementById('p-gender').value,
+    blood: document.getElementById('p-blood').value,
+    conditions: getSelected('ms-conditions'),
+    allergies: getSelected('ms-allergies'),
+    surgeries: document.getElementById('p-surgeries').value.trim(),
+    genetic: document.getElementById('p-genetic').value.trim(),
+    accidents: document.getElementById('p-accidents').value.trim(),
+    currentMeds: [...curMeds],
+    otherMeds: document.getElementById('p-othermeds').value.trim(),
+  };
+  document.getElementById('nav-user-label').textContent = profile.name;
+  showPageOnly('app-page');
+  showTab('medicine', document.querySelector('.nav-tab'));
+}
+
+// Current meds autocomplete in profile setup
+function acCurMed(q){
+  const list = document.getElementById('curmed-list');
+  if(q.length < 2){list.classList.remove('show');return;}
+  const matches = DRUG_LIST.filter(m=>m.includes(q.toLowerCase()) && !curMeds.includes(m)).slice(0,8);
+  renderAcList(list, matches, q, med=>{
+    curMeds.push(med);
+    document.getElementById('curmed-search').value='';
+    list.classList.remove('show');
+    renderCurMedChips();
+  });
+}
+function renderCurMedChips(){
+  const el = document.getElementById('curmed-chips');
+  el.innerHTML = curMeds.map(m=>`<span class="med-chip">${cap(m)}<span class="med-chip-remove" onclick="removeCurMed('${m}')">×</span></span>`).join('');
+}
+function removeCurMed(m){curMeds=curMeds.filter(x=>x!==m);renderCurMedChips();}
+
+// ══════════════════════════════════════════════════════════════
+// NAV TABS
+// ══════════════════════════════════════════════════════════════
+const TAB_IDS = ['medicine','interactions','assistant','profile-edit'];
+function showTab(name, btn){
+  TAB_IDS.forEach(t=>document.getElementById('tab-'+t).style.display='none');
+  document.getElementById('tab-'+name).style.display='block';
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(name==='profile-edit') buildProfileEditCard();
+}
+
+function signOut(){
+  user=null;profile=null;intMeds=[];curMeds=[];anaCurrentMed=null;historyItems=[];
+  document.getElementById('login-email').value='';
+  document.getElementById('login-phone').value='';
+  showPageOnly('login-page');
+}
+
+// ══════════════════════════════════════════════════════════════
+// AUTOCOMPLETE HELPERS
+// ══════════════════════════════════════════════════════════════
+function renderAcList(listEl, matches, q, onSelect){
+  if(!matches.length){listEl.classList.remove('show');return;}
+  listEl.innerHTML = matches.map(m=>{
+    const hi = m.replace(new RegExp(`(${q.toLowerCase()})`,'g'),'<em>$1</em>');
+    return `<div class="ac-item" onclick="void(0)">${hi}</div>`;
+  }).join('');
+  listEl.querySelectorAll('.ac-item').forEach((el,i)=>{
+    el.addEventListener('click',()=>onSelect(matches[i]));
+  });
+  listEl.classList.add('show');
+}
+
+function acKeydown(e, listId){
+  const list = document.getElementById(listId);
+  const items = list.querySelectorAll('.ac-item');
+  let focused = list.querySelector('.ac-item.focused');
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    if(!focused) items[0]&&items[0].classList.add('focused');
+    else { focused.classList.remove('focused'); (focused.nextElementSibling||items[0]).classList.add('focused'); }
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    if(!focused) items[items.length-1]&&items[items.length-1].classList.add('focused');
+    else { focused.classList.remove('focused'); (focused.previousElementSibling||items[items.length-1]).classList.add('focused'); }
+  } else if(e.key==='Enter'){
+    e.preventDefault();
+    if(focused) focused.click();
+  } else if(e.key==='Escape'){
+    list.classList.remove('show');
+  }
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', e=>{
+  document.querySelectorAll('.autocomplete-list').forEach(l=>{
+    if(!l.closest('.search-wrap').contains(e.target)) l.classList.remove('show');
+  });
+});
+
+// ══════════════════════════════════════════════════════════════
+// MEDICINE ANALYZER
+// ══════════════════════════════════════════════════════════════
+function acAna(q){
+  const list = document.getElementById('ana-list');
+  if(q.length < 2){list.classList.remove('show');return;}
+  const matches = DRUG_LIST.filter(m=>m.includes(q.toLowerCase())).slice(0,10);
+  renderAcList(list, matches, q, med=>selectAnaMed(med));
+}
+
+function selectAnaMed(med){
+  document.getElementById('ana-search').value = med;
+  document.getElementById('ana-list').classList.remove('show');
+  anaCurrentMed = med;
+  const d = DRUGS[med];
+  document.getElementById('ana-cat-badge').textContent = d.cat;
+  document.getElementById('ana-drug-name').textContent = cap(med);
+  document.getElementById('ana-drug-meta').innerHTML = `
+    <div class="drug-meta-item"><div class="drug-meta-key">Uses</div><div class="drug-meta-val">${d.use}</div></div>
+    <div class="drug-meta-item"><div class="drug-meta-key">Side effects</div><div class="drug-meta-val">${d.side}</div></div>
+    <div class="drug-meta-item"><div class="drug-meta-key">Warning</div><div class="drug-meta-val">${d.warning}</div></div>
+    <div class="drug-meta-item"><div class="drug-meta-key">Dosage</div><div class="drug-meta-val mono">${d.dosage}</div></div>
+  `;
+  showEl('ana-result');
+  hideEl('ana-ai-out'); hideEl('ana-safety-result');
+
+  // Personalised section
+  const ps = document.getElementById('ana-personal-section');
+  if(profile){
+    ps.style.display='block';
+    const conds = profile.conditions.join(', ') || 'none listed';
+    const allgs = profile.allergies.join(', ')  || 'none';
+    const cmeds = profile.currentMeds.join(', ')|| 'none';
+    document.getElementById('ana-personal-caption').textContent =
+      `Checking for: conditions: ${conds} · allergies: ${allgs} · current meds: ${cmeds}`;
+  } else {
+    ps.style.display='none';
+  }
+}
+
+async function runPersonalSafety(){
+  if(!anaCurrentMed||!profile) return;
+  showEl('ana-safety-spin'); hideEl('ana-safety-result');
+  const summary = buildProfileSummary(profile);
+  const text = await callAI(`You are a clinical pharmacist assistant. A patient wants to take ${anaCurrentMed}.
+
+Patient medical background:
+${summary}
+
+Your tasks:
+1. State clearly: SAFE / USE WITH CAUTION / AVOID for this specific patient.
+2. Explain why — reference their specific conditions, surgeries, allergies, or current medications.
+3. If caution or avoid: suggest 1–2 safer alternatives for the same purpose.
+Under 200 words. End with: "This is AI-generated guidance. Always confirm with your doctor or pharmacist."`);
+  hideEl('ana-safety-spin');
+  const lower = text.toLowerCase();
+  let cls = 'alert-ok';
+  if(lower.includes('avoid')||lower.includes('contraindicated')||lower.includes('dangerous')||lower.includes('do not')) cls='alert-danger';
+  else if(lower.includes('caution')||lower.includes('monitor')||lower.includes('careful')||lower.includes('risk')) cls='alert-warning';
+  const el = document.getElementById('ana-safety-result');
+  el.innerHTML = `<div class="alert ${cls}">${text}</div>`;
+  showEl('ana-safety-result');
+}
+
+async function aiAnaExplain(){
+  if(!anaCurrentMed) return;
+  showEl('ana-ai-spin'); hideEl('ana-ai-out');
+  const text = await callAI(`Explain the medicine ${anaCurrentMed} in simple plain English. Cover: (1) uses, (2) common side effects, (3) key warnings. Under 150 words. End with: "Always consult your doctor or pharmacist before use."`);
+  hideEl('ana-ai-spin');
+  document.getElementById('ana-ai-text').textContent = text;
+  showEl('ana-ai-out');
+}
+
+// ══════════════════════════════════════════════════════════════
+// DRUG INTERACTION CHECKER
+// ══════════════════════════════════════════════════════════════
+function acInt(q){
+  const list = document.getElementById('int-list');
+  if(q.length < 2){list.classList.remove('show');return;}
+  const matches = DRUG_LIST.filter(m=>m.includes(q.toLowerCase()) && !intMeds.includes(m)).slice(0,10);
+  renderAcList(list, matches, q, med=>addIntMed(med));
+}
+
+function addIntMed(med){
+  if(intMeds.includes(med)||intMeds.length>=8) return;
+  intMeds.push(med);
+  document.getElementById('int-search').value='';
+  document.getElementById('int-list').classList.remove('show');
+  renderIntChips();
+}
+
+function removeIntMed(med){ intMeds=intMeds.filter(x=>x!==med); renderIntChips(); }
+
+function renderIntChips(){
+  const chips = document.getElementById('int-chips');
+  chips.innerHTML = intMeds.map(m=>`<span class="med-chip">${cap(m)}<span class="med-chip-remove" onclick="removeIntMed('${m}')">×</span></span>`).join('');
+  const n = intMeds.length;
+  document.getElementById('int-count').textContent = n===0?'0 medicines added':`${n} medicine${n>1?'s':''} added`;
+  const show = n>=2;
+  document.getElementById('int-btn-divider').style.display = show?'block':'none';
+  document.getElementById('int-btn-row').style.display = show?'flex':'none';
+}
+
+function clearIntMeds(){ intMeds=[]; renderIntChips(); hideEl('int-results-card'); }
+
+function lookupInteraction(a,b){
+  const k1=`${a}|${b}`,k2=`${b}|${a}`;
+  return INTERACTIONS[k1]||INTERACTIONS[k2]||null;
+}
+
+function runInteractions(){
+  if(intMeds.length<2) return;
+  const resultsList = document.getElementById('int-results-list');
+  resultsList.innerHTML='';
+  let dCount=0,wCount=0,okCount=0;
+  const pairs=[];
+  for(let i=0;i<intMeds.length;i++){
+    for(let j=i+1;j<intMeds.length;j++){
+      const a=intMeds[i],b=intMeds[j];
+      const found=lookupInteraction(a,b);
+      if(found){
+        const [lv,msg]=found;
+        if(lv==='danger') dCount++;
+        else if(lv==='warning') wCount++;
+        else okCount++;
+        pairs.push({a,b,lv,msg});
+      } else {
+        okCount++;
+        pairs.push({a,b,lv:'ok',msg:'No major known interaction found in database.'});
+      }
+    }
+  }
+  document.getElementById('int-metrics').innerHTML=`
+    <div class="metric-box danger"><div class="metric-num">${dCount}</div><div class="metric-label">🚨 Dangerous</div></div>
+    <div class="metric-box warning"><div class="metric-num">${wCount}</div><div class="metric-label">⚠️ Warnings</div></div>
+    <div class="metric-box ok"><div class="metric-num">${okCount}</div><div class="metric-label">✅ No issue</div></div>
+  `;
+  pairs.forEach(({a,b,lv,msg})=>{
+    const label=`<strong>${cap(a)} + ${cap(b)}:</strong>`;
+    const cls = lv==='danger'?'alert-danger':lv==='warning'?'alert-warning':lv==='info'?'alert-info':'alert-ok';
+    const icon = lv==='danger'?'🚨':lv==='warning'?'⚠️':lv==='info'?'ℹ️':'✅';
+    resultsList.innerHTML += `<div class="alert ${cls}">${icon} ${label} ${msg}</div>`;
+  });
+
+  // Profile conflicts
+  const profConflicts = document.getElementById('int-profile-list');
+  profConflicts.innerHTML='';
+  let hasConflict=false;
+  if(profile&&profile.currentMeds.length){
+    profile.currentMeds.forEach(cm=>{
+      intMeds.forEach(nm=>{
+        if(nm===cm) return;
+        const found=lookupInteraction(nm,cm);
+        if(found){
+          const [lv,msg]=found;
+          const cls=lv==='danger'?'alert-danger':'alert-warning';
+          const icon=lv==='danger'?'🚨':'⚠️';
+          profConflicts.innerHTML+=`<div class="alert ${cls}">${icon} <strong>${cap(nm)} + your current ${cap(cm)}:</strong> ${msg}</div>`;
+          hasConflict=true;
+        }
+      });
+    });
+  }
+  document.getElementById('int-profile-conflicts').style.display=hasConflict?'block':'none';
+  hideEl('int-ai-out');
+  showEl('int-results-card');
+}
+
+async function aiIntCheck(){
+  showEl('int-ai-spin'); hideEl('int-ai-out');
+  const summary = profile ? buildProfileSummary(profile) : 'No profile provided.';
+  const text = await callAI(`Patient medical background:\n${summary}\n\nPatient wants to take: ${intMeds.join(', ')}\n\n1. List any clinically significant interactions between these medicines.\n2. Flag any that are risky given the patient's specific conditions or current medications.\n3. For each concern, state severity (mild/moderate/severe) and a brief reason.\n4. If no issues, say so clearly.\nUnder 200 words. End with: "Always consult your pharmacist before combining medicines."`);
+  hideEl('int-ai-spin');
+  document.getElementById('int-ai-text').textContent=text;
+  showEl('int-ai-out');
+}
+
+// ══════════════════════════════════════════════════════════════
+// AI HEALTH ASSISTANT
+// ══════════════════════════════════════════════════════════════
+function updateCharCount(){
+  const n=document.getElementById('ast-symptoms').value.length;
+  const el=document.getElementById('ast-char');
+  el.textContent=`${n} / 500`;
+  el.className='char-count'+(n>450?' near':'');
+}
+
+async function getHealthAdvice(){
+  const age=document.getElementById('ast-age').value;
+  const symptoms=document.getElementById('ast-symptoms').value.trim();
+  if(!symptoms){alert('Please describe your symptoms first.');return;}
+  showEl('ast-spin'); hideEl('ast-out');
+  const summary=profile?buildProfileSummary(profile):'No medical history provided.';
+  const text=await callAI(`Patient age: ${age}\nSymptoms: ${symptoms}\n\nMedical background:\n${summary}\n\nGive simple, safe, general health guidance tailored to this patient's background. Do NOT diagnose or recommend prescription medicines. Recommend seeing a doctor if symptoms are serious.\nEnd with: "This is general information only — please see a qualified healthcare professional."`);
+  hideEl('ast-spin');
+  document.getElementById('ast-ai-text').textContent=text;
+  showEl('ast-out');
+  historyItems.unshift({age,symptoms:symptoms.slice(0,80)+(symptoms.length>80?'…':''),advice:text,time:new Date().toLocaleTimeString()});
+  renderHistory();
+}
+
+function renderHistory(){
+  const card=document.getElementById('ast-history-card');
+  if(!historyItems.length){card.style.display='none';return;}
+  card.style.display='block';
+  document.getElementById('ast-history-list').innerHTML=historyItems.map((h,i)=>`
+    <div class="history-item">
+      <div class="history-meta">Query ${historyItems.length-i} · Age ${h.age} · ${h.time}</div>
+      <div class="history-symptoms">"${h.symptoms}"</div>
+      <div class="history-advice">${h.advice}</div>
+    </div>
+  `).join('');
+}
+
+function clearHistory(){historyItems=[];renderHistory();}
+
+// ══════════════════════════════════════════════════════════════
+// EDIT PROFILE (in-app)
+// ══════════════════════════════════════════════════════════════
+function buildProfileEditCard(){
+  if(!profile){document.getElementById('profile-edit-content').innerHTML='<p style="color:var(--text-2)">No profile loaded.</p>';return;}
+  const p=profile;
+  document.getElementById('profile-edit-content').innerHTML=`
+    <div class="card-label">Your profile</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px">
+      <div class="drug-meta-item"><div class="drug-meta-key">Name</div><div class="drug-meta-val">${p.name}</div></div>
+      <div class="drug-meta-item"><div class="drug-meta-key">Age</div><div class="drug-meta-val">${p.age}</div></div>
+      <div class="drug-meta-item"><div class="drug-meta-key">Gender</div><div class="drug-meta-val">${p.gender}</div></div>
+      <div class="drug-meta-item"><div class="drug-meta-key">Blood Group</div><div class="drug-meta-val">${p.blood}</div></div>
+    </div>
+    ${p.conditions.length?`<div class="drug-meta-item" style="margin-bottom:10px"><div class="drug-meta-key">Conditions</div><div class="drug-meta-val">${p.conditions.join(', ')}</div></div>`:''}
+    ${p.allergies.length?`<div class="drug-meta-item" style="margin-bottom:10px"><div class="drug-meta-key">Allergies</div><div class="drug-meta-val">${p.allergies.join(', ')}</div></div>`:''}
+    ${p.currentMeds.length?`<div class="drug-meta-item" style="margin-bottom:10px"><div class="drug-meta-key">Current medicines</div><div class="drug-meta-val">${p.currentMeds.join(', ')}</div></div>`:''}
+    ${p.surgeries?`<div class="drug-meta-item" style="margin-bottom:10px"><div class="drug-meta-key">Surgeries</div><div class="drug-meta-val">${p.surgeries}</div></div>`:''}
+    ${p.genetic?`<div class="drug-meta-item" style="margin-bottom:10px"><div class="drug-meta-key">Genetic conditions</div><div class="drug-meta-val">${p.genetic}</div></div>`:''}
+    ${p.accidents?`<div class="drug-meta-item" style="margin-bottom:10px"><div class="drug-meta-key">Injuries</div><div class="drug-meta-val">${p.accidents}</div></div>`:''}
+    <div class="divider"></div>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:14px">To update your profile, sign out and sign back in.</p>
+    <button class="btn btn-danger btn-sm" onclick="signOut()">Sign out & reset</button>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+// AI CALL
+// ══════════════════════════════════════════════════════════════
+async function callAI(prompt){
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':'YOUR_API_KEY_HERE','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    if(data.error){return `⚠️ AI error: ${data.error.message}`;}
+    if(data.content&&data.content[0]) return data.content[0].text;
+    return 'No response. Please try again.';
+  } catch(e){
+    return '⚠️ Could not reach AI service. Please check your connection.';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
+function showEl(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.style.display=el.classList.contains('spinner-row')?'flex':'block';
+}
+function hideEl(id){const el=document.getElementById(id);if(el)el.style.display='none';}
+
+function buildProfileSummary(p){
+  const lines=[];
+  if(p.name)        lines.push(`Patient: ${p.name}, Age ${p.age}, ${p.gender}`);
+  if(p.conditions.length)  lines.push(`Medical conditions: ${p.conditions.join(', ')}`);
+  if(p.allergies.length)   lines.push(`Known drug allergies: ${p.allergies.join(', ')}`);
+  if(p.surgeries)   lines.push(`Past surgeries: ${p.surgeries}`);
+  if(p.genetic)     lines.push(`Genetic conditions: ${p.genetic}`);
+  if(p.accidents)   lines.push(`Injuries with lasting effects: ${p.accidents}`);
+  if(p.currentMeds.length) lines.push(`Currently taking: ${p.currentMeds.join(', ')}`);
+  if(p.otherMeds)   lines.push(`Other medicines: ${p.otherMeds}`);
+  return lines.join('\n') || 'No medical history provided.';
+}
+</script>
+</body>
+</html>
